@@ -5,13 +5,15 @@ import store from './store'
 import axios from 'axios'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
+import Scroller from './components/Scroller'
+Vue.component('Scroller', Scroller)
 Vue.prototype.axios = axios
 Vue.use(MintUI)
 Vue.config.productionTip = false
-
 Vue.filter('SetWH', (url, arg) => {
   return url.replace(/w\.h/, arg)
 })
+
 new Vue({
   router,
   store,

@@ -1,6 +1,6 @@
 <template>
-  <div class="search_body">
-    <mt-search v-model="value">
+  <div class="search_body" ref="searchbody">
+    <mt-search v-model="value" ref="search">
       <div class="search_result">
         <h3>电影/电视剧/综艺</h3>
         <ul>
@@ -10,15 +10,16 @@
               <p>
                 <span>{{ item.nm }}</span><span>{{ item.sc }}</span>
               </p>
-              <p>{{ item.enm }}</p>
-              <p>{{ item.cat }}</p>
+              <p v-if='item.enm'>{{ item.enm }}</p>
+              <p v-else>暂无英译</p>
+              <p v-if='item.cat'>{{ item.cat }}</p>
+              <p v-else>暂无类别</p>
               <p>{{ item.rt }}</p>
             </div>
           </li>
         </ul>
       </div>
     </mt-search>
-
   </div>
 </template>
 
@@ -36,6 +37,14 @@
       }
     },
     name: 'Search',
+    mounted() {
+      console.log(this.$refs.search.$parent.$children[0].$el)
+      // this.$refs.search.$parent.$children[0].$el.style.height = 400 + 'px'
+      this.$refs.search.$parent.$children[0].$el.children[1].style.height = document.documentElement.clientHeight - 174 +
+        'px'
+      this.$refs.search.$parent.$children[0].$el.children[1].style.top = 115 + 'px'
+      this.$refs.search.$parent.$children[0].$el.children[1].style.paddingTop = 0 + 'px'
+    },
     watch: {
       value(newVal) {
         this.axios.get(
@@ -44,7 +53,6 @@
           var movies = res.data.movies
           if (movies) {
             this.movielist = res.data.movies.list
-            console.log(this.movielist)
           }
         })
       }
@@ -53,17 +61,24 @@
 </script>
 
 <style lang="scss" scoped>
-  #content .search_body {
-    flex: 1;
+  .mint-search-list {
+    height: 500px;
+    top: 100px;
     overflow: auto;
   }
 
+  .search_body {
+    flex: 1;
+    overflow: scroll;
+    height: 500px;
+  }
+
   .search_body .search_result h3 {
-    margin-top: 100px;
     font-size: 15px;
     color: #999;
-    padding: 9px 15px;
     border-bottom: 1px solid #e6e6e6;
+    overflow: auto;
+    margin-top: 20px;
   }
 
   .search_body .search_result li {

@@ -15,23 +15,26 @@
 
 <style lang='scss' scoped>
 
-  ul {
-    display: flex;
-
-    li {
-      flex: 1;
-      line-height: 50px;
-      text-align: center;
-    }
-  }
-
   nav {
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
     width: 100%;
     height: 50px;
     background: white;
+    border-top: 2px #ebe8e3 solid;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+  }
+
+  ul {
+    display: flex;
+    text-align: center;
+    height: 50px;
+    align-items: center;
+
+    li {
+      flex: 1;
+      height: 40px;
+    }
   }
 
   .router-link-active {

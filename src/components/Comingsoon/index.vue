@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="film_body">
+  <div class="film_body" ref="film_body">
+    <Scroller>
       <ul>
         <li v-for="data in filmlist" :key="data.filmId">
           <div class="pic_show">
@@ -8,23 +8,27 @@
           </div>
           <div class="info_list">
             <h2>{{data.name}}</h2>
-            <p>观众评<span class="grade" v-if="data.grade">{{data.grade}}
+            <p>观众评
+              <span class="grade" v-if="data.grade">
+                {{data.grade}}
               </span>
               <span class="grade" v-else>暂无评分</span>
             </p>
             <div class="actorlist">
-        <li v-for="(data,index) in data.actors" :key="index">
-          <p>{{data.name}}</p>
+              <ul>
+                <li v-for="(data,index) in data.actors" :key="index">
+                  <p>{{data.name}}</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="btn_mall">
+            <p v-if="data.isPresale">预购</p>
+            <p v-else>暂无预售</p>
+          </div>
         </li>
-    </div>
-  </div>
-  <div class="btn_mall">
-    <p v-if="data.isPresale">预购</p>
-    <p v-else>暂无预售</p>
-  </div>
-  </li>
-  </ul>
-  </div>
+      </ul>
+    </Scroller>
   </div>
 </template>
 
@@ -47,6 +51,7 @@
         var msg = res.data.msg
         if (msg === 'ok') {
           this.filmlist = res.data.data.films
+          this.$refs.film_body.style.height = document.documentElement.clientHeight - 140 + 'px'
           console.log(this.filmlist)
         }
       })

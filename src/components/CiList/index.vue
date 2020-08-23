@@ -1,29 +1,39 @@
 <template>
-  <div class="cinema_body">
-    <ul>
-      <li v-for="data in cinemalist" :key="data.cinemaId">
-        <div>
-          <span>{{data.name}}</span>
-          <span class="q">
-            <span class="price">{{data.lowPrice/100}}</span>元起
-          </span>
-        </div>
-        <div class="address">
-          <span>{{data.address}}</span>
-        </div>
-      </li>
-    </ul>
+  <div class="cinema_body" ref='cinema'>
+    <Scroller>
+      <ul>
+        <li v-for="data in cinemalist" :key="data.cinemaId">
+          <div>
+            <span>{{data.name}}</span>
+            <span class="q">
+              <span class="price">{{data.lowPrice/100.0}}</span>元起
+            </span>
+          </div>
+          <div class="address">
+            <span>{{data.address}}</span>
+          </div>
+        </li>
+      </ul>
+    </Scroller>
   </div>
 </template>
 
 <script>
+  import BetterScroll from 'better-scroll'
+  /* eslint-disable no-new */
   export default {
     data() {
       return {
-        cinemalist: []
+        cinemalist: [],
+        preCityid: -1,
+        cityId: 0
       }
     },
-    mounted() {
+    activated() {
+      this.cityId = this.$store.state.city.id
+      if (this.preCityid === this.cityId) {
+        return
+      }
       this.axios.get('/ajax/filterCinemas?ci=310110').then(
         res => {
           console.log(res.data)
@@ -31,7 +41,7 @@
       )
 
       this.axios({
-        url: 'https://m.maizuo.com/gateway?cityId=310100&ticketFlag=1&k=58469350',
+        url: `https://m.maizuo.com/gateway?cityId=${this.cityId}&ticketFlag=1&k=58469350`,
         headers: {
           'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"15954063428431020802052","bc":"310100"}',
           'X-Host': 'mall.film-ticket.cinema.list'
@@ -40,6 +50,13 @@
         if (result.data.msg === 'ok') {
           console.log(result.data)
           this.cinemalist = result.data.data.cinemas
+          this.$refs.cinema.style.height = document.documentElement.clientHeight - 0 + 'px'
+          this.$nextTick(() => {
+            new BetterScroll(this.$refs.cinema, {
+              tap: true,
+              probeType: 1
+            })
+          })
         }
       })
     }
@@ -47,13 +64,14 @@
 </script>
 
 <style lang="scss" scoped>
-  #content .cinema_body {
+  .cinema_body {
     flex: 1;
     overflow: auto;
   }
 
   .cinema_body ul {
     padding: 20px;
+    overflow-y: hidden;
   }
 
   .cinema_body li {
