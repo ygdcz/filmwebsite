@@ -1,5 +1,7 @@
 <template>
-  <div>Login</div>
+  <div>
+    login
+  </div>
 </template>
 
 <script>
@@ -8,5 +10,6 @@
   }
 </script>
 
-<style>
+<style scoped>
+
 </style>

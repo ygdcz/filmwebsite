@@ -1,11 +1,11 @@
 <template>
-  <div class="city_body">
+  <div class="city_body" ref="city">
     city
     <div class="city_hot">
       <h2>热门城市</h2>
       <ul>
-        <li v-for="(data,index) in hotpot " :key="index">
-          {{data}}
+        <li v-for="(data,index) in hotpot " :key="index.cityId" @click="handletocity(data.cityId,data.name)">
+          {{data.name}}
         </li>
       </ul>
     </div>
@@ -13,7 +13,9 @@
       <mt-index-list>
         <mt-index-section :index="data.index" v-for="data in datalist" :key="data.index">
           <div v-for="data in data.list" :key="data.cityId">
-            <mt-cell :title="data.name"></mt-cell>
+            <div @click="handletocity(data.cityId,data.name)">
+              <mt-cell :title="data.name"></mt-cell>
+            </div>
           </div>
         </mt-index-section>
       </mt-index-list>
@@ -31,20 +33,31 @@
     },
     name: 'City',
     mounted() {
-      this.axios({
-        url: 'https://m.maizuo.com/gateway?k=4743030',
-        headers: {
-          'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"15954063428431020802052"}',
-          'X-Host': 'mall.film-ticket.city.list'
-        }
-      }).then(res => {
-        var msg = res.data.msg
-        if (msg === 'ok') {
-          var data = res.data.data.cities
-          this.datalist = this.handlecitylist(data)
-          this.hotpot = this.handlehotpot(data)
-        }
-      })
+      var datalist = window.localStorage.getItem('datalist')
+      var hotpot = window.localStorage.getItem('hotpot')
+      if (datalist && hotpot) {
+        this.datalist = JSON.parse(datalist)
+        this.hotpot = JSON.parse(hotpot)
+      } else {
+        this.axios({
+          url: 'https://m.maizuo.com/gateway?k=4743030',
+          headers: {
+            'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"15954063428431020802052"}',
+            'X-Host': 'mall.film-ticket.city.list'
+          }
+        }).then(res => {
+          var msg = res.data.msg
+          if (msg === 'ok') {
+            var data = res.data.data.cities
+            this.datalist = this.handlecitylist(data)
+            this.hotpot = this.handlehotpot(data)
+            console.log(this.hotpot)
+            this.$refs.city.style.height = document.documentElement.clientHeight - 60 + 'px'
+            window.localStorage.setItem('datalist', JSON.stringify(this.datalist))
+            window.localStorage.setItem('hotpot', JSON.stringify(this.hotpot))
+          }
+        })
+      }
     },
     methods: {
       handlecitylist(cities) {
@@ -70,16 +83,29 @@
         var hottemp = []
         for (var i = 0; i < cities.length; i++) {
           if (cities[i].isHot === 1) {
-            hottemp.push(cities[i].name)
+            hottemp.push(cities[i])
           }
         }
         return hottemp
+      },
+      handletocity(id, name) {
+        this.$store.commit('city/CITY_INFO', {
+          id,
+          name
+        })
+        window.localStorage.setItem('nowName', name)
+        window.localStorage.setItem('nowId', id)
+        this.$router.push('/film/nowplaying')
       }
     }
   }
 </script>
 
 <style lang="scss" scoped>
+  .city_body {
+    overflow: hidden;
+  }
+
   .city_body .city_hot {
     margin-top: 20px;
     margin-bottom: 20px;

@@ -2,7 +2,7 @@
   <div>
     <Header title='电影'></Header>
     <ul>
-      <router-link to="/film/city" tag="li">城市</router-link>
+      <router-link to="/film/city" tag="li">{{$store.state.city.name}}▽</router-link>
       <router-link to="/film/nowplaying" tag="li">正在热映</router-link>
       <router-link to="/film/comingsoon" tag="li">即将上映</router-link>
       <router-link to="/film/search2" tag="li">查找</router-link>
